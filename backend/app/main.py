@@ -30,6 +30,10 @@ def unpack_master_database_if_needed():
             try:
                 db = SessionLocal()
                 cnt = db.query(Project).count()
+                p = db.query(Project).filter(Project.project_id == 'MPLAD-26241').first()
+                if p and abs(p.latitude - 11.66505) > 0.01:
+                    logger.info("Found outdated coordinates in database. Forcing fresh extraction...")
+                    need_extract = True
                 db.close()
                 if cnt < 5000:
                     need_extract = True
