@@ -49,7 +49,7 @@ def list_duplicates(
 @router.patch("/{candidate_id}/status")
 def update_duplicate_status(
     candidate_id: int,
-    status_val: str = Query(..., regex="^(FLAGGED|CONFIRMED_DISTINCT|CONFIRMED_DUPLICATE|UNDER_REVIEW)$"),
+    status_val: str = Query(..., pattern="^(FLAGGED|CONFIRMED_DISTINCT|CONFIRMED_DUPLICATE|UNDER_REVIEW)$"),
     notes: Optional[str] = Query(None),
     db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_current_user)
