@@ -78,7 +78,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="SIH 2026 Problem Statement #102: AI-Powered MPLADS Monitoring, Anomaly Detection & Investigation Platform.",
+    description="PARAKH: AI-Powered MPLADS Monitoring, Anomaly Detection & Investigation Platform.",
     lifespan=lifespan
 )
 

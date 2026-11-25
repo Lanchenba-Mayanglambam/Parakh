@@ -99,7 +99,7 @@ def prototype_login(payload: PrototypeLogin, db: Session = Depends(get_db)):
 @router.post("/demo-login/{role}", response_model=Token)
 def demo_quick_login(role: str, db: Session = Depends(get_db)):
     """
-    Convenient one-click login for demoing SIH evaluator roles
+    Convenient one-click login for demoing evaluator roles
     (ADMIN, ANALYST, INVESTIGATOR, VIEWER).
     """
     role_upper = role.upper()

@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # Security
-    SECRET_KEY: str = "sih-2026-mplads-ai-super-secret-key-production-ready-256bit"
+    SECRET_KEY: str = "parakh-vigil-mplads-ai-super-secret-key-production-ready-256bit"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
     

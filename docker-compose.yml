@@ -32,7 +32,7 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://mplads_user:mplads_password@db:5432/mplads_vigil
-      - SECRET_KEY=sih-2026-mplads-ai-super-secret-key-production-ready-256bit
+      - SECRET_KEY=parakh-vigil-mplads-ai-super-secret-key-production-ready-256bit
       - CORS_ORIGINS=["http://localhost:5173", "http://localhost:3000", "http://localhost:80", "http://127.0.0.1:5173", "*"]
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-3.5-flash-lite}
