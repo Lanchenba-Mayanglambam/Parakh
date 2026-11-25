@@ -9,6 +9,17 @@
 
 ---
 
+## 🌐 Live Production Deployment
+
+| Service | Platform | Live URL |
+|---|---|---|
+| **Web Portal** | **Vercel** | [https://parakh-lyart-one.vercel.app](https://parakh-lyart-one.vercel.app) |
+| **Backend REST API** | **Render** | [https://parakh-backend-qj54.onrender.com](https://parakh-backend-qj54.onrender.com) |
+| **Swagger API Docs** | **Render** | [https://parakh-backend-qj54.onrender.com/docs](https://parakh-backend-qj54.onrender.com/docs) |
+| **GitHub Repository** | **GitHub** | [https://github.com/Lanchenba-Mayanglambam/Parakh](https://github.com/Lanchenba-Mayanglambam/Parakh) |
+
+---
+
 ## 🌟 Executive Summary
 
 The **PARAKH AI Vigilance Platform** is an enterprise-grade monitoring and audit system built for the **Ministry of Statistics and Programme Implementation (MoSPI)**, State Nodal Departments, District Authorities, and Central Vigilance Officers.
@@ -127,7 +138,7 @@ The simplest way to run the entire stack (PostgreSQL + PostGIS, FastAPI, and Ngi
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/<your-username>/PARAKH.git
+   git clone https://github.com/Lanchenba-Mayanglambam/Parakh.git
    cd PARAKH
    ```
 
