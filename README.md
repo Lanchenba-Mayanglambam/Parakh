@@ -59,68 +59,66 @@ flowchart TD
     classDef api fill:#FAF5FF,stroke:#A855F7,stroke-width:2px,color:#6B21A8;
     classDef ui fill:#F0F9FF,stroke:#0284C7,stroke-width:2px,color:#075985;
 
-    subgraph RAW["1. Authentic MoSPI Source Datasets (Data/ Directory • 365,000+ Raw Rows • ~138 MB)"]
-        direction LR
-        subgraph LS["Lok Sabha Records (112 MB)"]
-            LS_REC["Works Recommended.csv<br/>102,339 records"]:::source
-            LS_SANC["Works Sanctioned.csv<br/>77,472 records"]:::source
-            LS_EXP["Expenditure on Works.csv<br/>81,706 records"]:::source
-            LS_COMP["Works Completed.csv<br/>33,667 records"]:::source
-            LS_LIM["Allocated Limit MPs.csv<br/>544 records"]:::source
-        end
-        subgraph RS["Rajya Sabha Records (25 MB)"]
-            RS_REC["Works Recommended.csv<br/>24,540 records"]:::source
-            RS_SANC["Works Sanctioned.csv<br/>19,079 records"]:::source
-            RS_EXP["Expenditure on Works.csv<br/>24,749 records"]:::source
-            RS_COMP["Works Completed.csv<br/>9,831 records"]:::source
-            RS_LIM["Allocated Limit MPs.csv<br/>222 records"]:::source
-        end
-        subgraph GEO_REF["Geospatial Master Reference"]
-            DIST_GEO["district_coordinates.csv<br/>732 District GPS Centroids"]:::source
-        end
+    subgraph RAW_LS["1A. Lok Sabha Source Files (Data/Lok-Shaba • 112 MB)"]
+        LS_REC["Works Recommended.csv\n102,339 records (31.26 MB)"]:::source
+        LS_SANC["Works Sanctioned.csv\n77,472 records (25.69 MB)"]:::source
+        LS_EXP["Expenditure on Works.csv\n81,706 records (19.56 MB)"]:::source
+        LS_COMP["Works Completed.csv\n33,667 records (10.24 MB)"]:::source
+        LS_LIM["Allocated Limit MPs.csv\n544 records"]:::source
+    end
+
+    subgraph RAW_RS["1B. Rajya Sabha Source Files (Data/Rajya-Shaba • 25 MB)"]
+        RS_REC["Works Recommended.csv\n24,540 records (8.43 MB)"]:::source
+        RS_SANC["Works Sanctioned.csv\n19,079 records (7.07 MB)"]:::source
+        RS_EXP["Expenditure on Works.csv\n24,749 records (6.60 MB)"]:::source
+        RS_COMP["Works Completed.csv\n9,831 records (3.35 MB)"]:::source
+        RS_LIM["Allocated Limit MPs.csv\n222 records"]:::source
+    end
+
+    subgraph GEO_REF["1C. Geospatial Master Reference"]
+        DIST_GEO["district_coordinates.csv\n732 District GPS Centroid Coordinates"]:::source
     end
 
     subgraph ETL["2. Ingestion & Spatial Geocoding Pipeline"]
-        INGEST_SCRIPT["ingest_all_data_folder.py<br/>• Schema Normalization & Deduplication<br/>• Composite Key Matching: Work ID + District + MP<br/>• Financial & Milestone Alignment"]:::etl
-        GEO_SCRIPT["recalculate_exact_coordinates.py<br/>• 732 District Coordinate Centroid Lookup<br/>• Landmark & Locality Pinpointing (LOCALITY_LOOKUP)<br/>• Jitter Offset for Micro-Constituency Separation"]:::etl
+        INGEST_SCRIPT["ingest_all_data_folder.py\nSchema Normalization, Multi-File Reconciliation & Key Joins"]:::etl
+        GEO_SCRIPT["recalculate_exact_coordinates.py\n732 District Coordinate Centroid Lookup & Locality Offsets"]:::etl
     end
 
-    subgraph STORAGE["3. Production Persistence Layer (mplads.db • SQLite WAL Mode • 95,964 Master Records)"]
-        direction TB
-        TBL_PROJ["projects (95,964 rows)<br/>ID, Title, Category, State, District, GPS Coordinates, Dates"]:::db
-        TBL_FIN["financial_records (69,852 rows)<br/>Sanctioned Cost, Total Expenditure, Fund Releases, Financial %"]:::db
-        TBL_PROG["progress_records (95,964 rows)<br/>Physical Progress %, Delay Days, Status: Completed/Ongoing"]:::db
-        TBL_RISK["risk_scores (95,964 rows)<br/>Overall Score (0-100), Level (LOW/MED/HIGH/CRIT), Rationale"]:::db
-        TBL_ALERT["alerts (10,228 rows)<br/>Cost Overrun, Milestone Delay, Duplicate Flag, Unsanctioned Work"]:::db
-        TBL_DUP["duplicate_candidates (1,000 rows)<br/>Pair Matches, Cosine Similarity %, Haversine Distance km"]:::db
-        TBL_MODELS["model_runs (4 rows)<br/>Logistic Regression, Random Forest, XGBoost, LightGBM Metrics"]:::db
+    subgraph STORAGE["3. Production Persistence Layer (mplads.db • SQLite WAL Mode)"]
+        TBL_PROJ["projects (95,964 rows)\nID, Title, Category, State, District, GPS Coordinates, Dates"]:::db
+        TBL_FIN["financial_records (69,852 rows)\nSanctioned Cost, Total Expenditure, Fund Releases"]:::db
+        TBL_PROG["progress_records (95,964 rows)\nPhysical Progress %, Delay Days, Status: Completed/Ongoing"]:::db
+        TBL_RISK["risk_scores (95,964 rows)\nOverall Score (0-100), Level (LOW/MED/HIGH/CRIT), Rationales"]:::db
+        TBL_ALERT["alerts (10,228 rows)\nCost Overrun, Milestone Delay, Duplicate Flag, Unsanctioned Work"]:::db
+        TBL_DUP["duplicate_candidates (1,000 rows)\nPair Matches, Cosine Similarity %, Haversine Distance km"]:::db
+        TBL_MODELS["model_runs (4 rows)\nLogistic Regression, Random Forest, XGBoost, LightGBM Metrics"]:::db
     end
 
     subgraph ENGINES["4. Analytics, Machine Learning & AI Intelligence Suite"]
-        direction TB
-        ENG_RULE["Deterministic Statutory Rule Engine (rule_engine.py)<br/>• Cost Escalation: Expenditure > Sanctioned (> 100% / > 120%)<br/>• Milestone Delay: Schedule Overrun (> 180 / > 365 Days)<br/>• Fund Pace: High Spend (> 80%) vs Minimal Ground Progress (< 20%)<br/>• Unsanctioned Execution Detection"]:::engine
-        ENG_ISO["Unsupervised Anomaly Model (isolation_forest.py)<br/>• Isolation Forest (n_estimators=100, contamination=0.15)<br/>• Multivariate Outlier Scoring on Financial-Temporal Feature Vectors"]:::engine
-        ENG_DUP["NLP & Geospatial Duplicate Detector (duplicate_detector.py)<br/>• TF-IDF 2-4 Character & Word N-Grams (Cosine Sim >= 0.85)<br/>• Haversine Distance Geodesic Filter (<= 25.0 km Proximity Radius)"]:::engine
-        ENG_BENCH["Supervised ML Benchmark Suite (supervised_models.py)<br/>• XGBoost, LightGBM, Random Forest, Logistic Regression<br/>• 5-Fold Stratified Cross-Validation, ROC-AUC, Confusion Matrix"]:::engine
-        ENG_LLM["Grounded AI Auditing Assistant (ai_query_engine.py)<br/>• Google Gemini 3.5 Flash Lite with Zero-Hallucination Guardrails<br/>• Dynamic SQL Retrieval Context from 95,964 Ground-Truth Records"]:::engine
+        ENG_RULE["Deterministic Statutory Rule Engine (rule_engine.py)\nCost Overruns, Milestone Delays, High Spend vs Low Progress"]:::engine
+        ENG_ISO["Unsupervised Anomaly Model (isolation_forest.py)\nIsolation Forest (100 estimators, 15% contamination rate)"]:::engine
+        ENG_DUP["NLP & Geospatial Duplicate Detector (duplicate_detector.py)\nTF-IDF N-Grams (Cosine Sim >= 0.85) + Haversine (<= 25km)"]:::engine
+        ENG_BENCH["Supervised ML Benchmark Suite (supervised_models.py)\nXGBoost, LightGBM, Random Forest, Logistic Regression (5-Fold CV)"]:::engine
+        ENG_LLM["Grounded AI Auditing Assistant (ai_query_engine.py)\nGoogle Gemini 3.5 Flash Lite + Anti-Hallucination SQL Grounding"]:::engine
     end
 
     subgraph API_LAYER["5. Gateway & API Service (FastAPI on Render Cloud)"]
-        direction TB
-        FASTAPI["FastAPI Application (app/main.py)<br/>• Live URL: parakh-backend-qj54.onrender.com<br/>• REST Endpoints: /api/v1/projects, /gis/markers, /risk, /ai, /alerts<br/>• SQLite WAL Mode with Auto-Gzip Archive Extraction (mplads.db.gz)<br/>• JWT Bearer Authentication & 4-Tier RBAC (Admin, Analyst, Investigator, Viewer)<br/>• In-Memory Response Caching & Composite Indexing (ix_projects_risk_overall)"]:::api
+        FASTAPI["FastAPI Backend (parakh-backend-qj54.onrender.com)\nREST Endpoints, SQLite WAL Gzip Boot Extraction, JWT Auth, 4-Tier RBAC"]:::api
     end
 
     subgraph CLIENT_LAYER["6. Client Presentation & Visualization (Vercel Global Edge CDN)"]
-        direction TB
-        REACT_APP["React 18 + TypeScript + Vite + Tailwind CSS (app.parakh)<br/>• Live URL: parakh-lyart-one.vercel.app<br/>• Interactive GIS Map (Leaflet Canvas: 4,320+ Rendered Markers & Duplicate Links)<br/>• Executive Analytics Dashboard (Recharts KPI Metrics & Risk Histograms)<br/>• Grounded AI Assistant Floating Widget (Markdown Streaming & Project Links)<br/>• Investigation Triage Center (Kanban Review Workflow & Audit Trail)"]:::ui
+        REACT_APP["React 18 + Vite Web App (parakh-lyart-one.vercel.app)\nInteractive Leaflet GIS Map (4,320+ Pins), Recharts KPIs, AI Assistant"]:::ui
     end
 
-    RAW -->|Raw CSV Data Pipeline| ETL
-    ETL -->|Structured Ingestion & Coordinates| STORAGE
-    STORAGE -->|ORM Feature Extraction| ENGINES
-    ENGINES -->|Risk Scoring & Anomaly Flags| STORAGE
-    STORAGE <-->|High-Speed SQL Queries| FASTAPI
-    FASTAPI <-->|HTTPS / REST / JSON (JWT Protected)| REACT_APP
+    RAW_LS -->|102k Recom / 77k Sanc| INGEST_SCRIPT
+    RAW_RS -->|24k Recom / 19k Sanc| INGEST_SCRIPT
+    GEO_REF -->|732 District GPS| GEO_SCRIPT
+    INGEST_SCRIPT -->|95,964 Normalized Records| STORAGE
+    GEO_SCRIPT -->|Pinpoint Coordinates| STORAGE
+    STORAGE -->|Feature Extraction| ENGINES
+    ENGINES -->|Risk Ratings & Alerts| STORAGE
+    STORAGE -->|Indexed SQL Queries| FASTAPI
+    FASTAPI -->|REST API / JSON Payloads| REACT_APP
 ```
 
 ---
