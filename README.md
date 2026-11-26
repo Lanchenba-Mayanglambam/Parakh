@@ -48,38 +48,84 @@ By analyzing authentic MPLADS data across Parliamentary Constituencies, PARAKH a
 
 ## 🏗️ Technology Architecture
 
+```mermaid
+flowchart TD
+    classDef client fill:#EFF6FF,stroke:#3B82F6,stroke-width:2px,color:#1E3A8A;
+    classDef gateway fill:#F5F3FF,stroke:#8B5CF6,stroke-width:2px,color:#4C1D95;
+    classDef core fill:#ECFDF5,stroke:#10B981,stroke-width:2px,color:#064E3B;
+    classDef engine fill:#FEF3C7,stroke:#F59E0B,stroke-width:2px,color:#78350F;
+    classDef data fill:#FDF2F8,stroke:#EC4899,stroke-width:2px,color:#831843;
+
+    subgraph CLIENT["1. Presentation & Client Layer (React 18 + Vite + Tailwind CSS)"]
+        UI_GIS["Interactive GIS Map\n(Leaflet Engine + Pulsating Markers)"]:::client
+        UI_DASH["Executive Analytics & KPIs\n(Recharts + Financial Gauges)"]:::client
+        UI_AI["Floating AI Assistant\n(Grounded Gemini LLM Widget)"]:::client
+        UI_TRIAGE["Investigation Center\n(Case Triage & Audit Trail)"]:::client
+        UI_CACHE["Client Cache & Deduplication\n(In-Flight Promise Cache)"]:::client
+    end
+
+    subgraph GATEWAY["2. Security & Edge Delivery Layer"]
+        VERCEL["Vercel Global Edge Network\n(SPA Rewrites & Static Asset CDN)"]:::gateway
+        NGINX["Nginx Production Proxy\n(Gzip Level 6 + HTTP/2)"]:::gateway
+        AUTH["Security & Auth Guard\n(JWT Bearer Tokens + 4-Tier RBAC)"]:::gateway
+    end
+
+    subgraph BACKEND["3. Backend Intelligence Core (FastAPI on Render / Python 3.12)"]
+        API_ROUTER["API Routing & Controllers\n(Projects, GIS Markers, Risk, AI, Alerts)"]:::core
+
+        subgraph ENGINES["Multi-Model Analytical & ML Suite"]
+            RULE_ENG["Deterministic Rule Engine\n(Cost Overruns, Delays, Payment Paces)"]:::engine
+            GEO_ENG["Geospatial Spatial Engine\n(Haversine Math + 2km Cluster Rings)"]:::engine
+            DUP_ENG["NLP Duplicate Detector\n(TF-IDF N-Grams + Cosine Similarity)"]:::engine
+            ISO_ENG["Unsupervised Anomaly Model\n(Isolation Forest Outlier Detection)"]:::engine
+            ML_SUITE["Supervised ML Benchmark Suite\n(XGBoost, LightGBM, Random Forest, LR)"]:::engine
+            LLM_ENG["Grounded Gemini AI Engine\n(gemini-3.5-flash-lite + Guardrails)"]:::engine
+        end
+    end
+
+    subgraph STORAGE["4. Persistence & Storage Layer"]
+        DB_SQLITE["SQLite with WAL Mode\n(High-Speed Local & Cloud Instance)"]:::data
+        DB_POSTGIS["PostgreSQL 16 + PostGIS 3.4\n(Spatial GiST Coordinates Indexing)"]:::data
+        DATA_ARCHIVE["Master Scheme Data Archive\n(4,320+ Live Records / 95,964 Works)"]:::data
+    end
+
+    CLIENT -->|HTTPS / REST / JSON| GATEWAY
+    GATEWAY -->|Authenticated Requests| API_ROUTER
+    API_ROUTER --> ENGINES
+    ENGINES -->|SQLAlchemy 2.0 ORM| STORAGE
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                       PARAKH FULL-STACK ARCHITECTURE                    │
-└─────────────────────────────────────────────────────────────────────────┘
-        │
-        ▼
- ┌────────────────────────────────────────────────────────┐
- │  FRONTEND CLIENT (React 18 + Vite + Tailwind CSS)     │
- │  - Real-time Leaflet GIS Map with Risk Pulsating Pins  │
- │  - Recharts Visualizations & Anomaly Distributions     │
- │  - Floating Grounded Gemini AI Assistant Widget        │
- │  - In-flight Request Deduplication & Memory Cache      │
- └───────────────────────┬────────────────────────────────┘
-                         │ REST / JSON (HTTP/Gzip)
-                         ▼
- ┌────────────────────────────────────────────────────────┐
- │  FASTAPI BACKEND CORE (Python 3.12)                   │
- │  - Multi-Factor Rule Engine & Risk Scorer              │
- │  - Geospatial Haversine & Spatial Proximity Engine     │
- │  - NLP Semantic Matching (TF-IDF + Cosine Similarity)  │
- │  - Isolation Forest Unsupervised Anomaly Detector      │
- │  - Supervised Model Suite (XGBoost, LightGBM, RF, LR)  │
- │  - Grounded Gemini LLM Audit Engine                    │
- └───────────────────────┬────────────────────────────────┘
-                         │ SQLAlchemy 2.0
-                         ▼
- ┌────────────────────────────────────────────────────────┐
- │  PERSISTENCE & STORAGE LAYER                           │
- │  - PostgreSQL 16 + PostGIS (Production)                │
- │  - SQLite with WAL & Composite Indexes (Local Dev)     │
- │  - 4,320+ Authentic Master Records + 95,964 Archive    │
- └────────────────────────────────────────────────────────┘
+
+### 🔄 End-to-End Operational & Auditing Sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Officer as Vigilance Officer / User
+    participant Frontend as Web Client (Vercel)
+    participant Backend as FastAPI Backend (Render)
+    participant ML as ML & Rule Engine
+    participant Gemini as Google Gemini 3.5 LLM
+    participant Database as Database (PostGIS / SQLite)
+
+    Officer->>Frontend: Accesses Portal & Selects Role
+    Frontend->>Backend: POST /api/v1/auth/demo-login (JWT Auth)
+    Backend-->>Frontend: Returns Auth Token & Role Permissions
+
+    Officer->>Frontend: Opens GIS Map / Project Explorer
+    Frontend->>Backend: GET /api/v1/projects/gis/markers?limit=5000
+    Backend->>Database: Query projects with composite index
+    Database-->>Backend: 4,320+ Geocoded Records
+    Backend-->>Frontend: GeoJSON with Risk Severity Badges
+    Frontend->>Officer: Renders High-FPS Canvas with Pulsating Pins
+
+    Officer->>Frontend: Asks Question in AI Assistant
+    Frontend->>Backend: POST /api/v1/ai/query
+    Backend->>Database: Fetch verified scheme records
+    Database-->>Backend: Grounded Project Facts & History
+    Backend->>Gemini: Prompt with strict anti-hallucination context
+    Gemini-->>Backend: Grounded Markdown Summary & Analysis
+    Backend-->>Frontend: Markdown Response & Direct Project Links
+    Frontend->>Officer: Displays Verified Audit Answer
 ```
 
 | Layer | Technologies & Tools |

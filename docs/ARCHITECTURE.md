@@ -2,21 +2,49 @@
 
 ## System Topology & Data Flow
 
-```
-[ Frontend: React 18 + TS + Vite + Tailwind CSS + Recharts + Leaflet ]
-                               |
-                               | REST API (JWT Bearer Auth & Role Headers)
-                               v
-               [ Backend: FastAPI (Python 3.12/3.14) ]
-                               |
-          +--------------------+--------------------+
-          |                    |                    |
-          v                    v                    v
- [ Database & Storage ]   [ Anomaly & ML ]     [ NLP & GIS Engine ]
- - SQLite (Local zero-dev) - Rule Engine        - TF-IDF & Cosine Similarity
- - PostgreSQL + PostGIS    - Isolation Forest   - Haversine Geodesic Math
-   (Docker production)     - Supervised Models  - Hotspot Cluster Detection
-                             (LR, RF, XGB, LGBM)- Controlled AI Query Layer
+```mermaid
+flowchart TD
+    classDef client fill:#EFF6FF,stroke:#3B82F6,stroke-width:2px,color:#1E3A8A;
+    classDef gateway fill:#F5F3FF,stroke:#8B5CF6,stroke-width:2px,color:#4C1D95;
+    classDef core fill:#ECFDF5,stroke:#10B981,stroke-width:2px,color:#064E3B;
+    classDef engine fill:#FEF3C7,stroke:#F59E0B,stroke-width:2px,color:#78350F;
+    classDef data fill:#FDF2F8,stroke:#EC4899,stroke-width:2px,color:#831843;
+
+    subgraph CLIENT["1. Client Layer (React 18 + Vite + Tailwind CSS)"]
+        UI_GIS["Interactive GIS Map\n(Leaflet + Pulsating Pins)"]:::client
+        UI_DASH["Executive Dashboard\n(Recharts Analytics)"]:::client
+        UI_AI["Floating AI Assistant\n(Grounded Gemini Widget)"]:::client
+        UI_TRIAGE["Investigation Center\n(Audit Trails & Triage)"]:::client
+    end
+
+    subgraph GATEWAY["2. Security & Edge Delivery Layer"]
+        VERCEL["Vercel Global Edge CDN\n(SPA Rewrites & Caching)"]:::gateway
+        AUTH["Security & Auth Guard\n(JWT Bearer + 4-Tier RBAC)"]:::gateway
+    end
+
+    subgraph BACKEND["3. Backend Application Core (FastAPI Python 3.12)"]
+        API_ROUTER["API Router & Controllers\n(REST / JSON Endpoints)"]:::core
+
+        subgraph ENGINES["Multi-Model Analytics & ML Suite"]
+            RULE_ENG["Deterministic Rule Engine\n(Cost, Delays, Payment Paces)"]:::engine
+            GEO_ENG["Geospatial Spatial Engine\n(Haversine + 2km Cluster Rings)"]:::engine
+            DUP_ENG["NLP Duplicate Detector\n(TF-IDF + Cosine Similarity)"]:::engine
+            ISO_ENG["Unsupervised Anomaly Model\n(Isolation Forest Outliers)"]:::engine
+            ML_SUITE["Supervised ML Suite\n(XGBoost, LightGBM, RF, LR)"]:::engine
+            LLM_ENG["Grounded Gemini AI Engine\n(gemini-3.5-flash-lite)"]:::engine
+        end
+    end
+
+    subgraph STORAGE["4. Persistence & Storage Layer"]
+        DB_SQLITE["SQLite with WAL Mode\n(Local / Render Deployment)"]:::data
+        DB_POSTGIS["PostgreSQL 16 + PostGIS 3.4\n(Spatial GiST Coordinates Indexing)"]:::data
+        DATA_ARCHIVE["Master Scheme Data Archive\n(4,320+ Live Records / 95k Archive)"]:::data
+    end
+
+    CLIENT -->|HTTPS / REST| GATEWAY
+    GATEWAY -->|Authenticated Payloads| API_ROUTER
+    API_ROUTER --> ENGINES
+    ENGINES -->|SQLAlchemy 2.0 ORM| STORAGE
 ```
 
 ---
